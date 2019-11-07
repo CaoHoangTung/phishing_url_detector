@@ -3,8 +3,8 @@ class Checker():
         self.x = 1
         pass
     
-    def check_url_status(params):
-        # params is an array containing feature specified in /features.txt
+    def check_url_status(input_value):
+        # input_value is an array containing feature specified in /features.txt
         # return 1/-1 : Phishing/Normal
         return 1
 
@@ -98,9 +98,5 @@ class Checker():
 
     def Statistical_report(url):
         return 1
-
-    def Result(url):
-        return 1
-    
 
     
