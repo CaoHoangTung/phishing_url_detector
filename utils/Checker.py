@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+
+import ssl
+import urllib.request
+import whois
+import datetime
+from tldextract import extract
+import dnspython as dns
+import dns.resolver
+
 class Checker():
     def __init__(self):
         self.x = 1
@@ -9,32 +19,77 @@ class Checker():
         return 1
 
     def having_IP_Address(url):
-        return 1
-    
+        symbol = regex.findall(r'(http((s)?)://)((((\d)+).)*)((\w)+)(/((\w)+))?',url)
+        if(len(symbol)!=0):
+            having_ip = 1 
+        else:
+            having_ip = -1 
+        return(having_ip)        
+            
     def URL_Length(url):
-        return 1
+        length=len(url)
+        if(length<54):
+            return -1
+        elif(54<=length<=75):
+            return 0
+        else:
+            return 1
 
     def Shortining_Service(url):
         return 1
     
     def having_At_Symbol(url):
-        # having @ symbol
-        return 1
+        symbol=regex.findall(r'@',url)
+        if(len(symbol)==0):
+            return -1
+        else:
+            return 1 
     
     def double_slash_redirecting(url):
         return 1
     
     def Prefix_Suffix(url):
-        return 1
+        subDomain, domain, suffix = extract(url)
+        if(domain.count('-')):
+            return 1
+        else:
+            return -1
     
     def having_Sub_Domain(url):
-        return 1
+        subDomain, domain, suffix = extract(url)
+        if(subDomain.count('.')==0):
+            return -1
+        elif(subDomain.count('.')==1):
+            return 0
+        else:
+            return 1
     
     def SSLfinal_State(url):
-        return 1
+        try:
+            if(regex.search('^https',url)):
+                usehttps = 1
+            else:
+                usehttps = 0
+            subDomain, domain, suffix = extract(url)
+            host_name = domain + "." + suffix
+            context = ssl.create_default_context()
+            sct = context.wrap_socket(socket.socket(), server_hostname = host_name)
+            sct.connect((host_name, 443))
+            certificate = sct.getpeercert()
+            
     
     def Domain_registeration_length(url):
-        return 1
+        try:
+            w = whois.whois(url)
+            updated = w.updated_date
+            exp = w.expiration_date
+            length = (exp[0]-updated[0]).days
+            if(length<=365):
+                return 1
+            else:
+                return -1
+        except:
+            return 0    
     
     def Favicon(url):
         return 1
@@ -43,7 +98,12 @@ class Checker():
         return 1
 
     def HTTPS_token(url):
-        return 1
+        subDomain, domain, suffix = extract(url)
+        host =subDomain +'.' + domain + '.' + suffix 
+        if(host.count('https')): 
+            return 1
+        else:
+            return -1
     
     def Request_URL(url):
         return 1
@@ -79,10 +139,27 @@ class Checker():
         return 1
     
     def age_of_domain (url):
-        return 1
+        try:
+            w = whois.whois(url)
+            start_date = w.creation_date
+            current_date = datetime.datetime.now()
+            age =(current_date-start_date[0]).days
+            if(age>=180):
+                return -1
+            else:
+                return 1
+        except Exception as e:
+            print(e)
+            return 0
 
     def DNSRecord(url):
-        return 1
+        try: 
+            result = dns.resolver.query(url, 'A')
+            for i in result:
+                if i:
+                  return -1  
+        except    
+            return 1
 
     def web_traffic(url):
         return 1
@@ -98,5 +175,13 @@ class Checker():
 
     def Statistical_report(url):
         return 1
+
+    def vector(url):
+        vec = [[url_having_ip(url),url_length(url),url_short(url),having_at_symbol(url),doubleSlash(url),prefix_suffix(url),sub_domain(url),SSLfinal_State(url),
+                domain_registration(url),favicon(url),port(url),https_token(url),request_url(url),url_of_anchor(url),Links_in_tags(url),sfh(url),email_submit(url),abnormal_url(url),
+                redirect(url),on_mouseover(url),rightClick(url),popup(url),iframe(url),age_of_domain(url),dns(url),web_traffic(url),page_rank(url),google_index(url),
+                links_pointing(url),statistical(url)]]
+        
+        return vec
 
     
