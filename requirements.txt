@@ -5,3 +5,4 @@ tldextract
 dnspython
 regex
 dnspython
+bs4
