@@ -5,8 +5,16 @@ import urllib.request
 import whois
 import datetime
 from tldextract import extract
+from urllib.request import urlopen
 import dnspython as dns
 import dns.resolver
+import bs4
+import regex
+import socket
+import threading
+
+#phishing 1
+#legit -1 
 
 class Checker():
     def __init__(self):
@@ -46,6 +54,8 @@ class Checker():
             return 1 
     
     def double_slash_redirecting(url):
+        if url.count('http') or url.count('https'):
+            pass
         return 1
     
     def Prefix_Suffix(url):
@@ -76,7 +86,8 @@ class Checker():
             sct = context.wrap_socket(socket.socket(), server_hostname = host_name)
             sct.connect((host_name, 443))
             certificate = sct.getpeercert()
-            
+        except:
+            return 0    
     
     def Domain_registeration_length(url):
         try:
@@ -95,7 +106,26 @@ class Checker():
         return 1
     
     def port(url):
-        return 1
+        port_open = ['80','443']
+        subDomain, domain, suffix = extract(url)
+        host = domain +'.'+suffix
+        ip = socket.gethostbyname(host)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        valid+port = [80,443]
+        def scanner(port):
+            try:
+                for i in port:
+                    sock.connect((ip, port))
+                return True
+            except:
+                return False
+        
+        for i in port:
+            if scanner(portNumber):
+                
+
+        
+        
 
     def HTTPS_token(url):
         subDomain, domain, suffix = extract(url)
@@ -158,12 +188,16 @@ class Checker():
             for i in result:
                 if i:
                   return -1  
-        except    
+        except:    
             return 1
 
     def web_traffic(url):
-        return 1
-
+        soup = bs4.BeautifulSoup(urlopen('http://data.alexa.com/data?cli=10&dat=snbamz&url='+url).read())
+        rank=soup.popularity['text']
+        if rank < '100000':
+            return -1
+        elif rank > '100000':
+            return 1
     def Page_Rank(url):
         return 1
 
