@@ -253,8 +253,9 @@ class Checker():
         target = domainarray[0]
         rank = target['rank']
         if rank=="None" or float(rank or 0.1)<0.2:
-            print("-1")
+            return -1
         else:
+            return 1
         
 
     def Google_Index(url):
