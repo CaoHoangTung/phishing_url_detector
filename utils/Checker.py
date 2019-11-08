@@ -245,8 +245,17 @@ class Checker():
             return 1
 
     def Page_Rank(url):
-        # MrNA
-        return 1
+        URL = "https://openpagerank.com/api/v1.0/getPageRank"
+        PARAMS = {'domains[]':'google.com'} 
+        r=requests.get(URL,params=PARAMS, headers={'API-OPR':'8044swwk8og00wwgc8ogo80cocs00o0o4008kkg0'})
+        json_data = r.json() 
+        domainarray = json_data['response']
+        target = domainarray[0]
+        rank = target['rank']
+        if rank=="None" or float(rank or 0.1)<0.2:
+            print("-1")
+        else:
+        
 
     def Google_Index(url):
         r = requests.head("https://webcache.googleusercontent.com/search?q=cache:" + url)
