@@ -212,7 +212,7 @@ class Checker():
     def Iframe(url):
         # proxyht
         import requests
-        html = requests.get("https://taeducation.top/").text
+        html = requests.get(url).text
         if "</iframe>" in html:
             return -1
         else:
