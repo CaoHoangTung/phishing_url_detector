@@ -232,12 +232,28 @@ class Checker():
         return 1
     
     def on_mouseover(url):
-        # done
-        return 1
+        html = requests.get(url).text
+        soup = BeautifulSoup(html, 'html.parser')
+        p = soup.find_all('script')
+        result = 1
+        strr = ""
+        for jss in p:
+            strr = strr + jss.text
+        if "window.status" in strr:
+            result = -1
+        return result
     
     def RightClick(url):
-        # MrNA
-        return 1
+        html = requests.get(url).text
+        soup = BeautifulSoup(html, 'html.parser')
+        p = soup.find_all('script')
+        result = 1
+        strr = ""
+        for jss in p:
+            strr = strr + jss.text
+        if "contextmenu" in strr:
+            result = -1
+        return result
     
     def popUpWidnow(url):
         # MrNA
@@ -248,7 +264,7 @@ class Checker():
         strr = ""
         for jss in p:
             strr = strr + jss.text
-        if "window" in strr:
+        if "window.open" in strr:
             result = -1
         return result
     
