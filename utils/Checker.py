@@ -6,20 +6,18 @@ import whois
 import datetime
 from tldextract import extract
 from urllib.request import urlopen
-import dnspython as dns
+# import dnspython as dns
 import dns.resolver
 import bs4
 import regex
 import socket
-
-
-#phishing 1
-#legit -1 
+import threading
+import requests
 
 class Checker():
-    def __init__(self):
-        self.x = 1
-        pass
+    # def __init__(self):
+    #     self.x = 1
+    #     pass
     
     def check_url_status(input_value):
         # input_value is an array containing feature specified in /features.txt
@@ -44,6 +42,7 @@ class Checker():
             return 1
 
     def Shortining_Service(url):
+        # proxyht
         return 1
     
     def having_At_Symbol(url):
@@ -54,6 +53,8 @@ class Checker():
             return 1 
     
     def double_slash_redirecting(url):
+        if url.count('http') or url.count('https'):
+            pass
         return 1
     
     def Prefix_Suffix(url):
@@ -84,6 +85,7 @@ class Checker():
             sct = context.wrap_socket(socket.socket(), server_hostname = host_name)
             sct.connect((host_name, 443))
             certificate = sct.getpeercert()
+            print("CERTIFICATE:",certificate)
         except:
             return 0    
     
@@ -101,15 +103,28 @@ class Checker():
             return 0    
     
     def Favicon(url):
+        # aiden
         return 1
     
     def port(url):
+        port_open = ['80','443']
+        subDomain, domain, suffix = extract(url)
+        host = domain +'.'+suffix
+        ip = socket.gethostbyname(host)
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        port = ['21','22','23','80','443']
-        for i in port:
-            con = s.connect((url,port))
+        valid_port = [80,443]
         
-
+        def scanner(port):
+            try:
+                for i in port:
+                    sock.connect((ip, port))
+                return True
+            except:
+                return False
+        
+        # for i in port:
+        #     if scanner(portNumber):
+                
     def HTTPS_token(url):
         subDomain, domain, suffix = extract(url)
         host =subDomain +'.' + domain + '.' + suffix 
@@ -119,36 +134,83 @@ class Checker():
             return -1
     
     def Request_URL(url):
-        return 1
+        # proxyht
+        r = requests.get(url)
+        html = r.text
+        domain = urlparse(url)[1]
+        
+        domain_elements = domain.split(".")
+        domain = ".".join(domain_elements[len(domain_elements)-2:])
+        # print(domain)
+        print(html)
+        regex_external = "(href=|src=)(\"|')((https|http)://.*?)(\"|')"
+        links = re.findall(regex_external,html)
+
+        regex_all = "(href=|src=)(\"|')(.*?)(\"|')"
+        total_links = len(re.findall(regex_all,html))
+
+        count_diff = 0 # number of external domains
+        for link in links:
+            # print(link[1])
+            domain_of_link = urlparse(link[2])[1]
+            domain_elements = domain_of_link.split(".")
+            domain_of_link = ".".join(domain_elements[len(domain_elements)-2:len(domain_elements)])
+            print(domain_of_link)
+            count_diff += domain_of_link != domain
+        if (total_links == 0):
+            return 1
+        
+        diff_rate = count_diff / total_links
+        
+        print(diff_rate,count_diff,len(links),total_links)
+            
+        # print(len(links))
+        # print(domain)
+        if diff_rate < 0.22:
+            return -1
+        elif diff_rate <= 0.61:
+            return 0
+        else:
+            return 1
     
     def URL_of_Anchor(url):
+        # proxyht
         return 1
     
     def Links_in_tags(url):
+        # MrNA
         return 1
     
     def SFH(url):
+        # MrNA
         return 1
     
     def Submitting_to_email(url):
+        # MrNA
         return 1
 
     def Abnormal_URL(url):
+        # MrNA
         return 1
     
     def Redirect(url):
+        # proxyht
         return 1
     
     def on_mouseover(url):
+        # done
         return 1
     
     def RightClick(url):
+        # MrNA
         return 1
     
     def popUpWidnow(url):
+        # MrNA
         return 1
     
     def Iframe(url):
+        # proxyht
         return 1
     
     def age_of_domain (url):
@@ -176,21 +238,29 @@ class Checker():
 
     def web_traffic(url):
         soup = bs4.BeautifulSoup(urlopen('http://data.alexa.com/data?cli=10&dat=snbamz&url='+url).read())
-        rank=soup.popularity['text']
-        if rank < '100000':
+        rank = int(soup.popularity['text'])
+        if rank < 100000:
             return -1
-        elif rank > '100000':
+        else:
             return 1
+
     def Page_Rank(url):
+        # MrNA
         return 1
 
     def Google_Index(url):
-        return 1
+        r = requests.head("https://webcache.googleusercontent.com/search?q=cache:" + url)
+        if r.status_code == 404:
+            return -1
+        else:
+            return 1
 
-    def Links_pointing_to_page(url):
+    def Links_pointing_to_page(url): # backlinks
+        # proxyht
         return 1
 
     def Statistical_report(url):
+        # proxyht
         return 1
 
     def vector(url):
