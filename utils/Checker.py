@@ -211,7 +211,12 @@ class Checker():
     
     def Iframe(url):
         # proxyht
-        return 1
+        import requests
+        html = requests.get("https://taeducation.top/").text
+        if "</iframe>" in html:
+            return -1
+        else:
+            return 1
     
     def age_of_domain (url):
         try:
