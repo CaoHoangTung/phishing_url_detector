@@ -12,7 +12,8 @@ import bs4
 import regex
 import socket
 import threading
-
+import requests
+#remember to pip install requests guys <mrna>
 #phishing 1
 #legit -1 
 
@@ -199,10 +200,15 @@ class Checker():
         elif rank > '100000':
             return 1
     def Page_Rank(url):
+
         return 1
 
     def Google_Index(url):
-        return 1
+        r = requests.head("https://webcache.googleusercontent.com/search?q=cache:" + url)
+        if r.status_code == 404:
+            return -1
+        else:
+            return 1
 
     def Links_pointing_to_page(url):
         return 1
