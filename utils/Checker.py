@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from bs4 import BeautifulSoup
 import ssl
 import urllib.request
 import whois
@@ -241,7 +241,16 @@ class Checker():
     
     def popUpWidnow(url):
         # MrNA
-        return 1
+        html = requests.get(url).text
+        soup = BeautifulSoup(html, 'html.parser')
+        p = soup.find_all('script')
+        result = 1
+        strr = ""
+        for jss in p:
+            strr = strr + jss.text
+        if "window" in strr:
+            result = -1
+        return result
     
     def Iframe(url):
         # proxyht
