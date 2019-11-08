@@ -1,7 +1,7 @@
 from flask import Flask,render_template,request
 from utils.Checker import Checker
 
-appp = Flask(__name__)
+apppp = Flask(__name__)
 feature_count = 30
 
 @app.route("/",methods=["GET"])
