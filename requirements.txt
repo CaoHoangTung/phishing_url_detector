@@ -6,3 +6,4 @@ dnspython
 regex
 dnspython
 bs4
+json
