@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import ssl
+import urllib
 import urllib.request
+from urllib.request import urlopen
 import whois
 import datetime
 from tldextract import extract
-from urllib.request import urlopen
 # import dnspython as dns
 import dns.resolver
 import bs4
@@ -103,7 +104,7 @@ class Checker():
             return 0    
     
     def Favicon(url):
-        # aiden
+        # proxyht
         return 1
     
     def port(url):
@@ -175,9 +176,14 @@ class Checker():
     
     def URL_of_Anchor(url):
         # proxyht
+        regex = "<.*?a.*?href.*?=.*?(\"|\').*?(\"|\').*?></a>"
+        html = requests.get(url).text
+        anchor_list = re.findall(regex,html)
+        print(anchor_list)
         return 1
     
     def Links_in_tags(url):
+
         # MrNA
         return 1
     
@@ -253,7 +259,7 @@ class Checker():
         URL = "https://openpagerank.com/api/v1.0/getPageRank"
         PARAMS = {'domains[]':'google.com'} 
         r=requests.get(URL,params=PARAMS, headers={'API-OPR':'8044swwk8og00wwgc8ogo80cocs00o0o4008kkg0'})
-        json_data = r.json() 
+        json_data = r.json()
         domainarray = json_data['response']
         target = domainarray[0]
         rank = target['rank']
@@ -261,7 +267,6 @@ class Checker():
             return -1
         else:
             return 1
-        
 
     def Google_Index(url):
         r = requests.head("https://webcache.googleusercontent.com/search?q=cache:" + url)
