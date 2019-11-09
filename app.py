@@ -24,9 +24,9 @@ def check():
     print(input_array)
     print(len(input_array))
     result = Functions.check_vector(input_array)
-    if (result == 1):
-        f = open("model/data/urls.csv","a",encoding="UTF-8")
-        f.write(submit_url+"\n")
+    # if (result == 1):
+    #     f = open("model/data/urls.csv","a",encoding="UTF-8")
+    #     f.write(submit_url+"\n")
     return str(result)
 
 def embed_url(url):

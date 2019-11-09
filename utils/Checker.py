@@ -100,7 +100,7 @@ class Checker():
             sct = context.wrap_socket(socket.socket(), server_hostname = host_name)
             sct.connect((host_name, 443))
             certificate = sct.getpeercert()
-            print("CERTIFICATE:",certificate)
+            # print("CERTIFICATE:",certificate)
             startingDate = str(certificate['notBefore'])
             endingDate = str(certificate['notAfter'])
             startingYear = int(startingDate.split()[3])
@@ -134,8 +134,23 @@ class Checker():
         subDomain, domain, suffix = extract(url)
         host_name = domain + "." + suffix
         DEFAULT_TIMEOUT = 0.5
-
-        return 1
+        open_port = []
+        list_ports = [21,22,23,80,443,445,1433,1521,3306,3389]
+        timeout=DEFAULT_TIMEOUT
+        TCPsock = socket.socket()
+        TCPsock.settimeout(timeout)
+        TCPsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        try:
+            for i in list_ports:
+                result = TCPsock.connect((host_name, i))
+                if result == 0:
+                    open_port.append(i)
+        except:
+            pass
+        if (80,443 in open_port) and  len(list_ports) > 2:
+            return 1
+        elif (80,443 in open_port) and len(list_ports) == 2:
+            return -1
                             
     def HTTPS_token(url):
         subDomain, domain, suffix = extract(url)
@@ -164,7 +179,7 @@ class Checker():
         # print("done getting regex")
         count_diff = 0 # number of external domains
         for link in links:
-            print(link)
+            # print(link)
             domain_of_link = urlparse(link[2])[1]
             domain_elements = domain_of_link.split(".")
             domain_of_link = ".".join(domain_elements[len(domain_elements)-2:len(domain_elements)])
@@ -175,7 +190,7 @@ class Checker():
         
         diff_rate = count_diff / total_links
         
-        print(diff_rate,count_diff,len(links),total_links)
+        # print(diff_rate,count_diff,len(links),total_links)
             
         # print(len(links))
         # print(domain)
@@ -187,7 +202,7 @@ class Checker():
             return 1
     
     def URL_of_Anchor(url):
-        print("ANCHOR")
+        # print("ANCHOR")
         # proxyht
         t1 = time.time()
         regex_str = "<a href=(\"|\')#"
@@ -196,7 +211,7 @@ class Checker():
         # print("HTML GET")
         anchor_list = regex.findall(regex_str,html)
         # print("AN")
-        print("ANCHOR LIST",anchor_list)
+        # print("ANCHOR LIST",anchor_list)
         return -1
     
     def Links_in_tags(url):
@@ -219,7 +234,7 @@ class Checker():
         # proxyht
         r = requests.get(url)
         redirections = len(r.history)
-        print(redirections)
+        # print(redirections)
         if redirections <= 1:
             return -1
         elif redirections < 4:
