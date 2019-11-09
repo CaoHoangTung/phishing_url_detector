@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import ssl
 import urllib
 import urllib.request
+from urllib.parse import urlparse
 from urllib.request import urlopen
 import whois
 import datetime
@@ -14,13 +15,21 @@ import regex
 import socket
 import threading
 import requests
+from model.functions import Functions
+import numpy as np
+import time
 
 class Checker():
     # def __init__(self):
     #     self.x = 1
     #     pass
     
-    def check_url_status(input_value):
+    def check_connection(url):
+        try:
+            r = requests.get(url)
+            return 1
+        except:
+            return 0
         # input_value is an array containing feature specified in /features.txt
         # return 1/-1 : Phishing/Normal
         return 1
@@ -43,6 +52,11 @@ class Checker():
             return 1
 
     def Shortining_Service(url):
+        r = requests.get(url)
+        if len(r.history) > 1:
+            return 1
+        else:
+            return -1
         # proxyht
         return 1
     
@@ -121,45 +135,8 @@ class Checker():
         host_name = domain + "." + suffix
         DEFAULT_TIMEOUT = 0.5
 
-        list_ports = []
-        def TCP_connect(ip, port_number, output,timeout=DEFAULT_TIMEOUT):
-            TCPsock = socket.socket()
-            TCPsock.settimeout(timeout)
-            TCPsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            try:
-                TCPsock.connect((ip, port_number))
-                output[port_number] = 'open'
-            except:
-                output[port_number] = ''
-
-        def scan_ports(host_ip):
-
-            threads = []        
-            output = {}        
-
-            for i in range(10000):
-                t = threading.Thread(target=TCP_connect, args=(host_ip, i, output))
-                threads.append(t)
-
-            for i in range(10000):
-                threads[i].start()
-
-            for i in range(10000):
-                threads[i].join()
-
-            for i in range(10000):
-                if output[i] == 'open':
-                    list_ports.append(i)
-            
-        def main():
-            host_ip = host_name
-            # host_ip = 'www.google.com'
-            scan_ports(host_ip)
-            if (80,443 in list_ports) and  len(list_ports) > 2:
-                return 1
-            elif (80,443 in list_ports) and len(list_ports) = 2:
-                return -1
-                
+        return 1
+                            
     def HTTPS_token(url):
         subDomain, domain, suffix = extract(url)
         host =subDomain +'.' + domain + '.' + suffix 
@@ -176,21 +153,22 @@ class Checker():
         
         domain_elements = domain.split(".")
         domain = ".".join(domain_elements[len(domain_elements)-2:])
-        # print(domain)
-        print(html)
-        regex_external = "(href=|src=)(\"|')((https|http)://.*?)(\"|')"
-        links = re.findall(regex_external,html)
+        # print("done domain",domain)
+        regex_external = "(href=|src=)(\"|')((https|http)://)"
+        # regex_external = "(\"|')http"
+
+        links = regex.findall(regex_external,html)
 
         regex_all = "(href=|src=)(\"|')(.*?)(\"|')"
-        total_links = len(re.findall(regex_all,html))
-
+        total_links = len(regex.findall(regex_all,html))
+        # print("done getting regex")
         count_diff = 0 # number of external domains
         for link in links:
-            # print(link[1])
+            print(link)
             domain_of_link = urlparse(link[2])[1]
             domain_elements = domain_of_link.split(".")
             domain_of_link = ".".join(domain_elements[len(domain_elements)-2:len(domain_elements)])
-            print(domain_of_link)
+            # print("DOMAIN OF LINK:",domain_of_link)
             count_diff += domain_of_link != domain
         if (total_links == 0):
             return 1
@@ -209,33 +187,46 @@ class Checker():
             return 1
     
     def URL_of_Anchor(url):
+        print("ANCHOR")
         # proxyht
-        regex = "<.*?a.*?href.*?=.*?(\"|\').*?(\"|\').*?></a>"
+        t1 = time.time()
+        regex_str = "<a href=(\"|\')#"
+        # print("TIME TAKEN:",time.time()-t1)
         html = requests.get(url).text
-        anchor_list = re.findall(regex,html)
-        print(anchor_list)
-        return 1
+        # print("HTML GET")
+        anchor_list = regex.findall(regex_str,html)
+        # print("AN")
+        print("ANCHOR LIST",anchor_list)
+        return -1
     
     def Links_in_tags(url):
-
         # MrNA
-        return 1
+        return -1
     
     def SFH(url):
         # MrNA
-        return 1
+        return -1
     
     def Submitting_to_email(url):
         # MrNA
-        return 1
+        return -1
 
     def Abnormal_URL(url):
         # MrNA
-        return 1
+        return -1
     
     def Redirect(url):
         # proxyht
-        return 1
+        r = requests.get(url)
+        redirections = len(r.history)
+        print(redirections)
+        if redirections <= 1:
+            return -1
+        elif redirections < 4:
+            return 0
+        else:
+            return 1
+        # still need to validate client redirecting sites
     
     def on_mouseover(url):
         html = requests.get(url).text
@@ -307,7 +298,10 @@ class Checker():
             return 1
 
     def web_traffic(url):
-        soup = bs4.BeautifulSoup(urlopen('http://data.alexa.com/data?cli=10&dat=snbamz&url='+url).read())
+        soup = bs4.BeautifulSoup(urlopen('http://data.alexa.com/data?cli=10&dat=snbamz&url='+url).read(),features="html.parser")
+        if not hasattr(soup.popularity,'text'):
+            return 1
+
         rank = int(soup.popularity['text'])
         if rank < 100000:
             return -1
@@ -336,11 +330,18 @@ class Checker():
 
     def Links_pointing_to_page(url): # backlinks
         # proxyht
-        return 1
+        return 0
 
     def Statistical_report(url):
         # proxyht
-        return 1
+        # return 1
+        f = open("model/data/urls.csv","r",encoding="UTF-8")
+        data = f.read().split("\n")
+        # print(data)
+        if url in data:
+            return 1
+        else: 
+            return -1
 
     def vector(url):
         vec = [[url_having_ip(url),url_length(url),url_short(url),having_at_symbol(url),doubleSlash(url),prefix_suffix(url),sub_domain(url),SSLfinal_State(url),
