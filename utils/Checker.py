@@ -92,7 +92,7 @@ class Checker():
             startingYear = int(startingDate.split()[3])
             endingYear = int(endingDate.split()[3])
             Age_of_certificate = endingYear-startingYear
-            if((usehttps==1) and and (Age_of_certificate>=1) ):
+            if((usehttps==1) and (Age_of_certificate>=1) ):
                 return -1 
             else:
                 return 1 
