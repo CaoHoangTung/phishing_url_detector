@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from bs4 import BeautifulSoup
 import ssl
 import urllib
 import urllib.request
@@ -87,8 +87,17 @@ class Checker():
             sct.connect((host_name, 443))
             certificate = sct.getpeercert()
             print("CERTIFICATE:",certificate)
-        except:
-            return 0    
+            startingDate = str(certificate['notBefore'])
+            endingDate = str(certificate['notAfter'])
+            startingYear = int(startingDate.split()[3])
+            endingYear = int(endingDate.split()[3])
+            Age_of_certificate = endingYear-startingYear
+            if((usehttps==1) and and (Age_of_certificate>=1) ):
+                return -1 
+            else:
+                return 1 
+        except Exception as e:
+            return 1  
     
     def Domain_registeration_length(url):
         try:
@@ -104,27 +113,52 @@ class Checker():
             return 0    
     
     def Favicon(url):
-        # proxyht
+        # Tung + Na
         return 1
     
     def port(url):
-        port_open = ['80','443']
         subDomain, domain, suffix = extract(url)
-        host = domain +'.'+suffix
-        ip = socket.gethostbyname(host)
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        valid_port = [80,443]
-        
-        def scanner(port):
+        host_name = domain + "." + suffix
+        DEFAULT_TIMEOUT = 0.5
+
+        list_ports = []
+        def TCP_connect(ip, port_number, output,timeout=DEFAULT_TIMEOUT):
+            TCPsock = socket.socket()
+            TCPsock.settimeout(timeout)
+            TCPsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             try:
-                for i in port:
-                    sock.connect((ip, port))
-                return True
+                TCPsock.connect((ip, port_number))
+                output[port_number] = 'open'
             except:
-                return False
-        
-        # for i in port:
-        #     if scanner(portNumber):
+                output[port_number] = ''
+
+        def scan_ports(host_ip):
+
+            threads = []        
+            output = {}        
+
+            for i in range(10000):
+                t = threading.Thread(target=TCP_connect, args=(host_ip, i, output))
+                threads.append(t)
+
+            for i in range(10000):
+                threads[i].start()
+
+            for i in range(10000):
+                threads[i].join()
+
+            for i in range(10000):
+                if output[i] == 'open':
+                    list_ports.append(i)
+            
+        def main():
+            host_ip = host_name
+            # host_ip = 'www.google.com'
+            scan_ports(host_ip)
+            if (80,443 in list_ports) and  len(list_ports) > 2:
+                return 1
+            elif (80,443 in list_ports) and len(list_ports) = 2:
+                return -1
                 
     def HTTPS_token(url):
         subDomain, domain, suffix = extract(url)
@@ -204,21 +238,46 @@ class Checker():
         return 1
     
     def on_mouseover(url):
-        # done
-        return 1
+        html = requests.get(url).text
+        soup = BeautifulSoup(html, 'html.parser')
+        p = soup.find_all('script')
+        result = 1
+        strr = ""
+        for jss in p:
+            strr = strr + jss.text
+        if "window.status" in strr:
+            result = -1
+        return result
     
     def RightClick(url):
-        # MrNA
-        return 1
+        html = requests.get(url).text
+        soup = BeautifulSoup(html, 'html.parser')
+        p = soup.find_all('script')
+        result = 1
+        strr = ""
+        for jss in p:
+            strr = strr + jss.text
+        if "contextmenu" in strr:
+            result = -1
+        return result
     
     def popUpWidnow(url):
         # MrNA
-        return 1
+        html = requests.get(url).text
+        soup = BeautifulSoup(html, 'html.parser')
+        p = soup.find_all('script')
+        result = 1
+        strr = ""
+        for jss in p:
+            strr = strr + jss.text
+        if "window.open" in strr:
+            result = -1
+        return result
     
     def Iframe(url):
         # proxyht
         import requests
-        html = requests.get("https://taeducation.top/").text
+        html = requests.get(url).text
         if "</iframe>" in html:
             return -1
         else:

@@ -20,7 +20,7 @@ print(y)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20)
 # print(X_test)
 print("test : \n", X_test)
-svclassifier = SVC(kernel='linear')
+svclassifier = SVC(kernel='rbf')
 svclassifier.fit(X_train, y_train)
 
 
