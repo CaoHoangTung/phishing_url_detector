@@ -8,29 +8,30 @@ from mlxtend.plotting import plot_decision_regions
 # from sklearn import datasets
 from pandas.plotting import scatter_matrix
 from joblib import dump, load
+import collections
 
 data = pd.read_csv('data/phishing.csv')
 # print(data.head())
-X = data.drop('index',axis=1).iloc[:, :30].values
+X = data.drop(['index','SFH'],axis=1).iloc[:, :30].values
 y = data.iloc[:,-1].values
 # print(X)
-# print(y)
+# print(y)s
 
 # scatter_matrix(X, alpha=0.2, figsize=(6, 6), diagonal='kde')
 # plt.show()
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20)
 # print(X_test)
-print("test : \n", X_test)
-print(X_test[0])
-print(X_test[0].shape)
+# print("test : \n", X_test)
+# print(X_test[0])
+# print(X_test[0].shape)
 deg = [1,2,3,4,5,6,7,8,9,10]
 # for i in deg:
 svclassifier = SVC(kernel='poly',degree=5)
 svclassifier.fit(X_train, y_train)
-dump(svclassifier, 'pre_model.joblib') 
+# dump(svclassifier, 'pre_model.joblib') 
 
 
-# y_pred = svclassifier.predict(X_test)
+y_pred = svclassifier.predict(X_test)
 
 # test = data.drop(['Result','index'],axis=1).iloc[2].values
 # test_2d = test.reshape(1, -1)
@@ -39,8 +40,8 @@ dump(svclassifier, 'pre_model.joblib')
 
 # y_pred_test = svclassifier.predict(test_2d)
 
-# print(confusion_matrix(y_test,y_pred))
-# print(classification_report(y_test,y_pred))
+print(confusion_matrix(y_test,y_pred))
+print(classification_report(y_test,y_pred))
 # print("X=%s, Predicted=%s" % (test_2d, y_pred_test[0]))
 # print(y_pred.shape)
 
