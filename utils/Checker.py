@@ -244,16 +244,19 @@ class Checker():
         # still need to validate client redirecting sites
     
     def on_mouseover(url):
-        html = requests.get(url).text
-        soup = BeautifulSoup(html, 'html.parser')
-        p = soup.find_all('script')
-        result = 1
-        strr = ""
-        for jss in p:
-            strr = strr + jss.text
-        if "window.status" in strr:
-            result = -1
-        return result
+        try:
+            html = requests.get(url).text
+            soup = BeautifulSoup(html, 'html.parser')
+            p = soup.find_all('script')
+            result = 1
+            strr = ""
+            for jss in p:
+                strr = strr + jss.text
+            if "window.status" in strr:
+                result = -1
+            return result
+        except:
+            return 1
     
     def RightClick(url):
         html = requests.get(url).text

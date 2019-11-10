@@ -8,7 +8,7 @@ from mlxtend.plotting import plot_decision_regions
 from sklearn import datasets
 from pandas.plotting import scatter_matrix
 
-data = pd.read_csv('data/phishing.csv')
+data = pd.read_csv('data/new_data.csv')
 # print(data.head())
 X = data.drop('index',axis=1).iloc[:, :30].values
 y = data.iloc[:,-1].values
