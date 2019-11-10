@@ -352,7 +352,7 @@ class Checker():
         # return 1
         f = open("model/data/urls.csv","r",encoding="UTF-8")
         data = f.read().split("\n")
-        # print(data)
+        print(len(data))
         if url in data:
             return 1
         else: 

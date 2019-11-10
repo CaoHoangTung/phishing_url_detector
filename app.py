@@ -15,10 +15,10 @@ def main():
 def check():
     submit_url = request.args["url"]
     if not Checker.check_connection(submit_url):
-        return "-1"
+        return "1"
     if(Checker.Statistical_report(submit_url) == 1):
         return "1"
-
+    # return "-1"
     print("Getting info for",submit_url)
     input_array = embed_url(submit_url)
     print(input_array)
