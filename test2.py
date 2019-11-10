@@ -78,4 +78,3 @@ for elems in urls:
     row = ','.join(str(e) for e in arr)
     print(row)
     f.write(row+"\n")
-    break
