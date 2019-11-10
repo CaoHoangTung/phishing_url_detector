@@ -63,9 +63,9 @@ def embed_url(url):
         return -2
 
 f = open("new_data_legit.csv","a",encoding="UTF-8")
-urls_file = open("model/data/data_set_top500Domains.csv","r",encoding="UTF-8")
+urls_file = open("na_dataset.csv","r",encoding="UTF-8")
 urls = urls_file.read().split("\n")
-urls = urls[330:]
+urls = urls[165:]
 for elems in urls:
     url = elems.split(",")[1].replace('"','')
     # print(url)
@@ -78,3 +78,4 @@ for elems in urls:
     row = ','.join(str(e) for e in arr)
     print(row)
     f.write(row+"\n")
+    break
